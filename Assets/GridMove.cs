@@ -11,16 +11,26 @@ class GridMove : MonoBehaviour {
 	private Orientation gridOrientation = Orientation.Vertical;
 	private bool allowDiagonals = false;
 	private bool correctDiagonalSpeed = true;
-	private Vector2 input;
+	public Vector2 input;
 	private bool isMoving = false;
 	private Vector3 startPosition;
 	private Vector3 endPosition;
 	private float t;
 	private float factor;
+	private Animator animator;
+
+	void Start () {
+		animator = GetComponent<Animator>();
+	}
 	
 	public void Update() {
 		if (!isMoving) {
 			input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+			if (input.x != 0 || input.y != 0){
+				animator.SetBool ("moving", true); animateWalk (input.x, input.y);
+			} else {
+				animator.SetBool ("moving", false);
+			}
 			if (!allowDiagonals) {
 				if (Mathf.Abs(input.x) > Mathf.Abs(input.y)) {
 					input.y = 0;
@@ -62,5 +72,21 @@ class GridMove : MonoBehaviour {
 		
 		isMoving = false;
 		yield return 0;
+	}
+	void animateWalk(float h,float v) {
+		if(animator){
+			if ((v > 0)&&(v>h)) {
+				animator.SetInteger ("direction", 1);
+			}
+			if ((h > 0)&&(v<h)) {
+				animator.SetInteger ("direction", 2);
+			}
+			if ((v < 0)&&(v<h)) {
+				animator.SetInteger ("direction", 3);
+			}
+			if ((h < 0 )&&(v>h)) {
+				animator.SetInteger ("direction", 4);
+			}
+		}
 	}
 }
